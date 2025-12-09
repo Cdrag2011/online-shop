@@ -1,0 +1,23 @@
+const auth = (req, res, next) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.replace("Bearer ", "");
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    next();
+  } catch {
+    return res.status(401).json({ success: false });
+  }
+};
+
+const adminOnly = (req, res, next) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ success: false });
+  }
+  next();
+};
+
+app.get("/orders", auth, adminOnly, (req, res) => {
+  const orders = loadOrders();
+  res.json(orders);
+});

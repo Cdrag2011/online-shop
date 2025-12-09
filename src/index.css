@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes sloganSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-sloganSlide {
+  animation: sloganSlide 0.8s ease-out forwards;
+}
+
+@keyframes pulseSmooth {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-smooth {
+  animation: pulseSmooth 1.6s infinite ease-in-out;
+}
+
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+}
+
+@keyframes slideLeft {
+  0% { transform: translateX(40px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.7s ease-out;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(40px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.7s ease-out;
+}
+
+@keyframes pulseSmooth {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-smooth {
+  animation: pulseSmooth 1.6s infinite ease-in-out;
+}
+
+@keyframes slideFade {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+}
+
+.animate-slideFade {
+  animation: slideFade 4s ease-in-out infinite;
+}
+
+/* SLIDE + ZOOM + NEON GLOW + FADE */
+@keyframes slideZoomGlow {
+  0% {
+    opacity: 0;
+    transform: translateX(60px) scale(0.9);
+    text-shadow: 0 0 0px rgba(255, 215, 0, 0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateX(0) scale(1.05);
+    text-shadow: 0 0 10px rgba(255, 230, 80, 0.8),
+                 0 0 20px rgba(255, 200, 40, 0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    text-shadow: 0 0 6px rgba(255, 230, 80, 0.8),
+                 0 0 18px rgba(255, 200, 40, 0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.95);
+    text-shadow: 0 0 0px rgba(255, 230, 80, 0);
+  }
+}
+
+.animate-slideZoomGlow {
+  animation: slideZoomGlow 4s ease-in-out infinite;
+}
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.3s ease-out forwards;
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+
