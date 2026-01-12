@@ -1,0 +1,21 @@
+# environment
+.env
+.env.*
+!.env.example
+
+# dependencies
+node_modules/
+
+# build
+dist/
+
+# runtime / generated
+orders.json
+invoices/
+
+# system
+.DS_Store
+
+
+
+
