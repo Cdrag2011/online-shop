@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { products } from "../data/products";
 import { slugify, unslugify } from "../utils/slugify";
-import Breadcrumbs from "../components/BreadCrumbs";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 const BrandPage = () => {
   const { slug } = useParams<{ slug: string }>(); // 👈 TIPARE CORECTĂ

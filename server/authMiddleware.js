@@ -1,15 +1,28 @@
+// server/authMiddleware.js
 import jwt from "jsonwebtoken";
 
-export function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
+const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+export const auth = (req, res, next) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.replace("Bearer ", "");
+
+  if (!token) {
+    return res.status(401).json({ success: false, error: "No token" });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
     next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
+  } catch (err) {
+    return res.status(401).json({ success: false, error: "Invalid token" });
   }
-}
+};
+
+export const adminOnly = (req, res, next) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ success: false, error: "Admin only" });
+  }
+  next();
+};

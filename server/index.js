@@ -1,124 +1,92 @@
 import express from "express";
 import cors from "cors";
-import nodemailer from "nodemailer";
-import fs from "fs";
-import path from "path";
-import PDFDocument from "pdfkit";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const __dirname = process.cwd();
-const app = express();
+// Încarcă .env din acest folder
+dotenv.config({ path: path.join(__dirname, ".env") });
 
-app.use(cors());
-app.use(express.json());
-
-// folder facturi
-const invoicesDir = path.join(__dirname, "invoices");
-if (!fs.existsSync(invoicesDir)) {
-  fs.mkdirSync(invoicesDir);
-}
-
-// Servire facturi
-app.use("/invoices", express.static(invoicesDir));
-
-// Nodemailer
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+console.log("✅ ENV LOADED:", {
+  PORT: process.env.PORT,
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: process.env.SMTP_PORT,
+  SMTP_SECURE: process.env.SMTP_SECURE,
+  SMTP_USER: process.env.SMTP_USER,
+  MAIL_FROM: process.env.MAIL_FROM,
+  MAIL_TO: process.env.MAIL_TO,
 });
 
-// Helper: generează factura PDF
-function generateInvoicePdf(orderId, order) {
-  return new Promise((resolve, reject) => {
-    const filePath = path.join(invoicesDir, `invoice-${orderId}.pdf`);
-    const doc = new PDFDocument({ margin: 50 });
+const app = express();
 
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-    doc.fontSize(20).text("Factura fiscală", { align: "center" });
-    doc.moveDown();
+app.use(express.json({ limit: "1mb" }));
 
-    doc.fontSize(12).text(`Număr factură: ${orderId}`);
-    doc.text(`Data: ${new Date().toLocaleString("ro-RO")}`);
-    doc.moveDown();
+app.get("/", (_req, res) => res.json({ status: "API OK" }));
 
-    doc.text(`Client: ${order.name}`);
-    doc.text(`Email: ${order.email}`);
-    doc.text(`Telefon: ${order.phone}`);
-    doc.text(`Adresă: ${order.address}, ${order.city}, ${order.county}`);
-    if (order.company) doc.text(`Firmă: ${order.company}`);
-    if (order.cui) doc.text(`CUI: ${order.cui}`);
-    doc.moveDown();
+// IMPORTANT: import după dotenv
+import { sendOrderEmail } from "./mailer.js";
 
-    doc.text("Produse:", { underline: true });
-    order.items.forEach((item) => {
-      doc.text(
-        `- ${item.name} x ${item.quantity} = ${
-          item.price * item.quantity
-        } lei`
-      );
-    });
-
-    doc.moveDown();
-    doc.text(`Total produse: ${order.total} lei`);
-    doc.text(`Transport: ${order.transportCost} lei`);
-    doc.text(`Total de plată: ${order.grandTotal} lei`, {
-      bold: true,
-    });
-
-    doc.end();
-
-    stream.on("finish", () => resolve(filePath));
-    stream.on("error", reject);
-  });
-}
-
-// Ruta principală de checkout — apelată din frontend
-app.post("/checkout", async (req, res) => {
+app.post("/api/order", async (req, res) => {
   try {
-    const { orderId, order } = req.body;
-    if (!orderId || !order) {
-      return res.status(400).json({ error: "Lipsesc orderId sau order" });
+    const { customer, cart, total } = req.body;
+
+    if (!customer || typeof customer !== "object") {
+      return res.status(400).json({ error: "Customer lipsă" });
+    }
+    if (!customer.name || !customer.email || !customer.phone) {
+      return res.status(400).json({ error: "Customer incomplet" });
+    }
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({ error: "Cart gol" });
     }
 
-    // 1. Generăm factura
-    const pdfPath = await generateInvoicePdf(orderId, order);
+    const totalNumber = Number(total);
+    if (!Number.isFinite(totalNumber)) {
+      return res.status(400).json({ error: "Total invalid" });
+    }
 
-    // 2. Trimitem email la client + admin
-    const toClient = order.email;
-    const toAdmin = process.env.TO_EMAIL || process.env.SMTP_USER;
+    const result = await sendOrderEmail({
+      customer,
+      cart,
+      total: totalNumber,
+    });
 
-    const mailOptions = {
-      from: `"Neo Tech Shop" <${process.env.SMTP_USER}>`,
-      to: `${toClient}, ${toAdmin}`,
-      subject: `Factura comandă #${orderId}`,
-      text: `Bună, ${order.name}!\n\nAtașăm factura pentru comanda ta.\n\nTotal: ${order.grandTotal} lei.\n\nMulțumim,\nNeo Tech Shop`,
-      attachments: [
-        {
-          filename: `invoice-${orderId}.pdf`,
-          path: pdfPath,
-        },
-      ],
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.json({ success: true, invoiceUrl: `/invoices/invoice-${orderId}.pdf` });
-  } catch (error) {
-    console.error("Eroare la /checkout:", error);
-    res.status(500).json({ error: "Eroare la procesarea comenzii" });
+    return res.json({
+      success: true,
+      message: "Comanda a fost trimisă cu succes",
+      mail: result,
+    });
+  } catch (err) {
+    console.error("❌ ORDER ERROR:", err);
+    return res.status(500).json({ error: "Eroare trimitere comandă" });
   }
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server backend pornit pe portul ${PORT}`);
+const PORT = Number(process.env.PORT || 4000);
+
+const server = app.listen(PORT, "127.0.0.1", () => {
+  console.log(`✅ Server pornit: http://127.0.0.1:${PORT}`);
+});
+
+server.on("error", (err) => {
+  console.error("❌ LISTEN ERROR:", err);
+});
+
+// ca să vedem dacă procesul moare dintr-un motiv ascuns
+process.on("uncaughtException", (err) => {
+  console.error("❌ UNCAUGHT EXCEPTION:", err);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("❌ UNHANDLED REJECTION:", err);
 });

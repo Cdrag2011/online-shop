@@ -32,28 +32,23 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/politica-confidentialitate"
-                className="hover:text-yellow-400"
-              >
+              <Link to="/confidentialitate" className="hover:text-yellow-400">
                 Politica de confidențialitate
               </Link>
             </li>
+
             <li>
-              <Link to="/termeni-conditii" className="hover:text-yellow-400">
+             <Link to="/termeni-conditii" className="hover:text-yellow-400">
                 Termeni și condiții
-              </Link>
+             </Link>
             </li>
+
             <li>
-              <Link to="/politica-cookies" className="hover:text-yellow-400">
-                Politica de cookie-uri
+             <Link to="/cookies" className="hover:text-yellow-400">
+              Politica de cookie-uri
               </Link>
             </li>
-            <li>
-              <Link to="/despre" className="hover:text-yellow-400">
-                Despre noi
-              </Link>
-            </li>
+
             <li>
               <Link to="/livrare-retur">Livrare & retur</Link>
             </li>

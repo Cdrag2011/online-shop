@@ -8,7 +8,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
-import Breadcrumbs from "../components/BreadCrumbs";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 const UserOrdersPage: React.FC = () => {
   const { user } = useAuth();

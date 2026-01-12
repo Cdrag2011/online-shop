@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaWhatsapp, FaPhoneAlt, FaFacebookF } from "react-icons/fa";
 
 const FloatingButtons = () => {

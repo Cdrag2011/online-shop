@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Breadcrumbs from "../components/BreadCrumbs";
+import Breadcrumbs from "../components/Breadcrumbs";
 import { getAllProducts } from "../utils/firestoreProducts";
 import type { Product } from "../types/products";
+import { img } from "../utils/img";
 
 const ProductListPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filtre
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
@@ -35,19 +35,17 @@ const ProductListPage = () => {
     );
   }
 
-  // Extragem branduri + categorii
   const brands = [...new Set(products.map((p) => p.brand))];
   const categories = [...new Set(products.map((p) => p.category))];
 
-  // Aplicăm filtre
   let filtered = products.filter((p) => {
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchBrand = brand ? p.brand === brand : true;
-    const matchCategory = category ? p.category === category : true;
-    return matchSearch && matchBrand && matchCategory;
+    return (
+      p.name.toLowerCase().includes(search.toLowerCase()) &&
+      (brand ? p.brand === brand : true) &&
+      (category ? p.category === category : true)
+    );
   });
 
-  // Sortări
   if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
   if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
   if (sort === "alpha-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -99,8 +97,8 @@ const ProductListPage = () => {
           <option value="">Sortează...</option>
           <option value="price-asc">Preț ↑</option>
           <option value="price-desc">Preț ↓</option>
-          <option value="alpha-asc">A-Z</option>
-          <option value="alpha-desc">Z-A</option>
+          <option value="alpha-asc">A–Z</option>
+          <option value="alpha-desc">Z–A</option>
         </select>
       </div>
 
@@ -113,7 +111,7 @@ const ProductListPage = () => {
             className="bg-white/10 p-4 rounded-2xl backdrop-blur hover:scale-[1.03] transition"
           >
             <img
-              src={p.image}
+              src={img(p.image)}
               className="h-44 w-full object-contain mb-4"
               alt={p.name}
             />

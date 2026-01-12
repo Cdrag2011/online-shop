@@ -3,13 +3,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import FloatingButtons from "../components/FloatingButtons";
+import { img } from "../utils/img";
 
 const CartPage: React.FC = () => {
   const { cart, total, removeFromCart, updateQuantity, clearCart } = useCart();
 
   return (
     <div className="pt-32 px-6 text-white max-w-4xl mx-auto">
-
       <h1 className="text-4xl font-bold mb-6">Coșul tău</h1>
 
       {cart.length === 0 ? (
@@ -18,8 +18,7 @@ const CartPage: React.FC = () => {
 
           <Link
             to="/produse"
-            className="bg-yellow-500 hover:bg-yellow-400 
-            text-black px-6 py-3 rounded-xl font-bold inline-block"
+            className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold inline-block"
           >
             Înapoi la Gama de Produse
           </Link>
@@ -29,40 +28,42 @@ const CartPage: React.FC = () => {
           {cart.map((item) => (
             <div
               key={item.product.id}
-              className="bg-white/10 p-4 rounded-xl mb-4 flex justify-between items-center"
+              className="bg-white/10 p-4 rounded-xl mb-4 flex gap-4 items-center"
             >
-              <div>
+              {/* imagine */}
+              <img
+                src={img(item.product.image)}
+                alt={item.product.name}
+                className="w-20 h-20 object-contain bg-white/5 rounded-lg p-2"
+              />
+
+              {/* text */}
+              <div className="flex-1">
                 <h3 className="font-bold">{item.product.name}</h3>
                 <p className="text-yellow-400">{item.product.price} lei</p>
               </div>
 
-              <div className="flex gap-4 items-center">
-                {/* Scade cantitatea */}
+              {/* qty + actiuni */}
+              <div className="flex gap-3 items-center">
                 <button
-                  onClick={() =>
-                    updateQuantity(item.product.id, item.quantity - 1)
-                  }
+                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                   className="px-3 py-1 bg-gray-700 rounded-xl"
                 >
                   -
                 </button>
 
-                <span>{item.quantity}</span>
+                <span className="min-w-[24px] text-center">{item.quantity}</span>
 
-                {/* Crește cantitatea */}
                 <button
-                  onClick={() =>
-                    updateQuantity(item.product.id, item.quantity + 1)
-                  }
+                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                   className="px-3 py-1 bg-gray-700 rounded-xl"
                 >
                   +
                 </button>
 
-                {/* Șterge produs */}
                 <button
                   onClick={() => removeFromCart(item.product.id)}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-400 hover:text-red-300 ml-2"
                 >
                   Șterge
                 </button>
@@ -70,7 +71,6 @@ const CartPage: React.FC = () => {
             </div>
           ))}
 
-          {/* Total */}
           <div className="mt-6">
             <h2 className="text-2xl font-bold mb-4">
               Total: <span className="text-yellow-400">{total} lei</span>
@@ -78,13 +78,11 @@ const CartPage: React.FC = () => {
 
             <Link
               to="/checkout"
-              className="inline-block bg-yellow-500 hover:bg-yellow-400 
-              text-black py-3 px-6 rounded-xl font-bold"
+              className="inline-block bg-yellow-500 hover:bg-yellow-400 text-black py-3 px-6 rounded-xl font-bold"
             >
               Finalizează Comanda
             </Link>
 
-            {/* BUTON de Golire totală */}
             <button
               onClick={clearCart}
               className="ml-4 bg-red-600 hover:bg-red-500 py-3 px-6 rounded-xl font-bold"
@@ -95,7 +93,6 @@ const CartPage: React.FC = () => {
         </>
       )}
 
-      {/* Butoane flotante */}
       <FloatingButtons />
     </div>
   );

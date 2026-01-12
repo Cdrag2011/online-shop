@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import BrandSlider from "./BrandSlider";
 import FloatingButtons from "./FloatingButtons";
-import heroBg from "../assets/imagine-fundal1.png";
 
 const HeroSection = () => {
   // SLOGANE ROTATIVE
@@ -31,7 +30,7 @@ const HeroSection = () => {
     <section
       className="relative w-full h-[90vh] flex justify-center"
       style={{
-        backgroundImage: `url(${heroBg})`,
+        backgroundImage: "url('/imagine-fundal1.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

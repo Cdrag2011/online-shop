@@ -17,10 +17,17 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem("cart");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch (err) {
+      console.error("Cart localStorage corrupt:", err);
+      return [];
+    }
   });
 
   useEffect(() => {
@@ -52,9 +59,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     setCart((prev) =>
-      prev.map((i) =>
-        i.product.id === id ? { ...i, quantity: qty } : i
-      )
+      prev.map((i) => (i.product.id === id ? { ...i, quantity: qty } : i))
     );
   };
 
@@ -67,7 +72,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, total }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        total,
+      }}
     >
       {children}
     </CartContext.Provider>

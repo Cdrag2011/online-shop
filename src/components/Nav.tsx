@@ -5,8 +5,8 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import WishlistPopup from "./WishlistPopup";
+import logo from "/logos/neo-tech-logo6.png";
 
-const logo = "/logos/neo-tech-logo6.png";
 
 const Nav: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
