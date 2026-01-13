@@ -21,3 +21,6 @@ build/
 server/orders.json
 server/invoices/
 server/emailTemplates/
+
+*.pptx
+
